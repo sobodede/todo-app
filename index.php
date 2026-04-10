@@ -1,5 +1,15 @@
 <?php
-require 'config.php'; echo "Connexion OK";
+require 'config.php';
+
+if (isset($_GET['delete'])) {
+    $id = $_GET['delete'];
+
+    $stmt = $pdo->prepare("DELETE FROM taches WHERE id = ?");
+    $stmt->execute([$id]);
+
+    header("Location: index.php");
+    exit;
+}
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $titre = $_POST["titre"];
@@ -47,9 +57,9 @@ foreach ($taches as $t) {
     echo "<p>" . htmlspecialchars($t['description']) . "</p>";
     echo "<p>Statut : " . $t['statut'] . "</p>";
     echo "<p>Priorité : " . $t['priorite'] . "</p>";
-    echo "</div><hr>";
+    echo "</div>";
 }
 ?>
 
 </body>
-</html>ok merci 
+</html>
