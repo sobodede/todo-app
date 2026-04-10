@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 <h2><?php echo isset($_GET['edit']) ? "Modifier une tâche" : "Ajouter une tâche"; ?></h2>
 
-<form method="POST">
+<form method="POST" onsubmit="return verifierForm()">
 
     <input type="text" name="titre" placeholder="Titre"
     value="<?php echo htmlspecialchars($editTache['titre'] ?? ''); ?>">
@@ -79,12 +79,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 <hr>
 
+<h3>Filtrer</h3>
+<button onclick="filtrer('all')">Toutes</button>
+<button onclick="filtrer('a_faire')">À faire</button>
+<button onclick="filtrer('termine')">Terminées</button>
+
+<hr>
+
 <?php
 $stmt = $pdo->query("SELECT * FROM taches ORDER BY id DESC");
 $taches = $stmt->fetchAll();
 
 foreach ($taches as $t) {
-    echo "<div style='border:1px solid #000; padding:10px; margin:10px;'>";
+    echo "<div class='tache' data-statut='" . $t['statut'] . "' style='border:1px solid #000; padding:10px; margin:10px;'>";
 
     echo "<h3>" . htmlspecialchars($t['titre']) . "</h3>";
     echo "<p>" . htmlspecialchars($t['description']) . "</p>";
@@ -97,6 +104,36 @@ foreach ($taches as $t) {
     echo "</div>";
 }
 ?>
+
+<!-- JAVASCRIPT CAPTURE 1 -->
+<script>
+function verifierForm() {
+    let titre = document.querySelector('input[name="titre"]').value;
+
+    if (titre.trim() === "") {
+        alert("Le titre est obligatoire !");
+        return false;
+    }
+
+    return true;
+}
+
+function filtrer(type) {
+    let taches = document.querySelectorAll('.tache');
+
+    taches.forEach(t => {
+        if (type === 'all') {
+            t.style.display = "block";
+        } else {
+            if (t.dataset.statut === type) {
+                t.style.display = "block";
+            } else {
+                t.style.display = "none";
+            }
+        }
+    });
+}
+</script>
 
 </body>
 </html>
